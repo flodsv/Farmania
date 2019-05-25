@@ -1,13 +1,14 @@
 # Farmania
+![Farmania](https://raw.githubusercontent.com/flodsv/Farmania/master/fm.png?token=ALIO3L6OMJLKDU7U6DPOIR245EGVO)
 
-# __-[INSTALLATION]-__
+# [INSTALLATION]
 * 1)Install Wamp Server
 * 2) Go on wamp64/www and create a new folder
 * 3) Past the assets directory and jeu.html into the new folder
 * 4) Launch WAMP SERVER and in you webbrowser go to http://localhost/NewFolderName/jeu.html
 * 5) Enjoy Our Game !
 
-# __-[DESCRPTION]-__
+# [DESCRPTION]
 
 Farmania est un jeu de simulation de ferme dans lequel vous pouvez:
 - Elever votre propre bétail
