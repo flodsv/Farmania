@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+    <title>Farmania</title>
+    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<script type="text/javascript">
+var game = new Phaser.Game(1280, 832, Phaser.AUTO, '', { preload: preload, create: create, update: update});
+var w = 1280, h = 832;
+function preload() {
+		game.load.spritesheet('drone', 'assets/drone.png', 40, 32);
+		game.load.spritesheet('fermier', 'assets/farmer.png', 32, 32);
+		game.load.spritesheet('eolienne', 'assets/eolienne.png', 84, 134);
+		game.load.spritesheet('vache', 'assets/vache.png', 48, 48);
+		game.load.spritesheet('poule', 'assets/poule.png', 48, 48);
+		game.load.spritesheet('capteur', 'assets/capteur.png', 8,8);
+		game.load.spritesheet('champsalade', 'assets/champsalade.png');
+		game.load.spritesheet('champpiment', 'assets/champpiment.png');
+		game.load.spritesheet('champfraise', 'assets/champfraise.png');
+		game.load.image('rond_rouge','assets/rond_rouge.png');
+		game.load.image('zone_text', 'assets/zone_text.png', 480,100);
+		game.load.image('prod_vache', 'assets/prod_vache.png');
+		game.load.image('calendar', 'assets/calendar.png');
+		game.load.image('menu_shop', 'assets/menu_shop.png');
+		game.load.image('button', 'assets/transparent.png', 160, 100);
+		game.load.image('button2', 'assets/transparent.png', 60, 50);
+		game.load.image('solar_panel', 'assets/solar_panel2.png');
+		game.load.image('cross', 'assets/cross.png', 30, 30);
+		game.load.image('mvt_right', 'assets/mvt_right.png', 30, 30);
+		game.load.image('mvt_left', 'assets/mvt_left.png', 30, 30);
+		game.load.image('ground', 'assets/ground.png');
+		game.load.image('bitcoin', 'assets/money2.png');
+		game.load.image('croix', 'assets/croix.png');
+		game.load.image('terre','assets/terre.png');
+		game.load.image('cadre_achat_vente', 'assets/cadreshop.png');
+		game.load.image('cadre_vente', 'assets/cadre_vente.png');
+		game.load.image('cadre_achat', 'assets/cadre_achat.png');
+		game.load.image('vendre_oeuf', 'assets/oeuf_shop.png');
+		game.load.image('vendre_salade', 'assets/energieshop.png');
+		game.load.image('vendre_viande', 'assets/viandeshop.png');
+		game.load.image('vendre_lait', 'assets/laitshop.png');
+		game.load.image('vendrepiment', 'assets/vendrepiment.png');
+		game.load.image('vendresalade', 'assets/vendresalade.png');
+		game.load.image('vendrefraise', 'assets/vendrefraise.png');
+		game.load.image('acheter_drone', 'assets/drone_autonome.png');
+		game.load.image('acheter_eolienne', 'assets/eolienne_shop.png');
+		game.load.image('acheter_panneau', 'assets/panneau_solaire_shop.png');
+		game.load.image('acheter_vache', 'assets/vache_laitiere.png');
+		game.load.image('acheter_poule', 'assets/poule_shop.png');
+		game.load.image('salade', 'assets/salade.png');
+		game.load.image('plante_grouge', 'assets/plante_grouge.png');
+		game.load.image('plante_rouge', 'assets/plante_rouge.png');
+		game.load.image('salade_shop', 'assets/Salade.png');
+		game.load.image('plante_grouge_shop', 'assets/plante_grouge_shop.png');
+		game.load.image('plante_rouge_shop', 'assets/plante_rouge_shop.png');
+		game.load.audio('succes', ['assets/audio/succes.mp3']);
+		game.load.spritesheet('spritesucces', ['assets/spritesucces1.png'],434,95);
+		game.load.spritesheet('checklist', ['assets/checklist.png']);
+		game.load.image('fin', 'assets/fin.png');
+		game.load.tilemap('map', 'assets/tilemaps/TileSet/PLSdemap.json', null, Phaser.Tilemap.TILED_JSON);
+		game.load.image('PLSdemap', 'assets/tilemaps/TileSet/PLSdemap.png');
+}
+var cordy=0;
+var counter = 0;
+var counterpoule=0;
+var counterTune = 0;
+var counter_vache=0;
+var counter_poule=0;
+var counter2 = 0;
+var text = 0;
+var button;
+var fermier;
+var vendre_oeuf;
+var eolienne;
+var vaches=[];
+var poules=[];
+var vaches_create=[];
+var poules_create=[];
+var nbr_vache=0;
+var nbr_poule=0;
+var vache_total =0;
+var poule_total=0;
+var vaches_traite=0;
+var poules_ponte=0;
+var drone;
+var cursors;
+var ouvert=false;
+var ouvert2=false;
+var ouvert3=false;
+var ouvert4=false;
+var ouvert5=false;
+var ouvert6=false;
+var existe = 0;
+var paneaux;
+var paneauxSol_shop;
+var prod_vache;
+var fin_menu; // MENU POUR LA FIN
+var viande=0;
+var lait=0;
+var oeuf=0;
+var argent;
+var energie=0;
+var ble=0;
+var croix1;
+var croix2;
+var croix3;
+var jour;
+var compteur_mort = 0;
+var bitcoin = 500;
+var argent;
+var dateAchatTrac = 0;
+var dateAchatPanneaux = 0;
+var point_eolienne = 0;
+var achat_eolienne = 0;
+var achat_vaches = 0;
+var achat_poules=0;
+var achat_drone=0;
+var achat_paneaux=0;
+var achat_capteur=0;
+var map;
+var layer;
+var layer2;
+var click=0;
+var stars;
+var SC=0;
+var score;
+var scoreText;
+var score_affichage;
+var compteur=0;
+var capteurs=[];
+var affichage_oeuf;
+var affichage_vsalade;
+var affichage_viande;
+var affichage_lait;
+var affichage=0;
+var vaches_morte=0;
+var poules_morte=0;
+var achat_salade=0;
+var achat_piment=0;
+var mvt_right;
+var acheter_drone;
+var achat_planteR=0;
+var texte=1;
+var zone_text;
+var piment_recolte=0;
+var salade_recolte=0;
+var fraise_recolte=0;
+
+
+function create() {
+	game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL; //Initialisation map et collision
+	game.scale.startFullScreen();
+	game.input.onDown.add(gofull, this);
+	map = game.add.tilemap('map'); 
+	map.addTilesetImage('PLSdemap');
+	background = map.createLayer('Background');
+	collide = map.createLayer('BlockColliders');
+	map.setCollisionBetween(0,2000, true,'BlockColliders');
+	background.resizeWorld();
+	collide.resizeWorld();
+	game.physics.startSystem(Phaser.Physics.ARCADE);  
+    platforms = game.add.group();
+    platforms.enableBody = true;
+	var ground = platforms.create(512, 415, 'ground');
+	ground.scale.setTo(0.1, 5);
+	ground.body.immovable = true;
+
+	fermier = game.add.sprite(140, 140, 'fermier'); // Init Skin fermier
+	game.physics.arcade.enable(fermier);
+	fermier.body.gravity.y = 0;
+	fermier.body.collideWorldBounds = true;
+	fermier.animations.add('right', [1, 4, 7], 7, true);
+	fermier.animations.add('left', [3, 6, 9], 7, true);
+	fermier.animations.add('down', [5, 8, 11], 7, true);
+	fermier.animations.add('up', [2, 10], 7, true);
+    cursors = game.input.keyboard.createCursorKeys();
+		//Carré Date
+		var graphics = game.add.graphics(0, 0);
+		graphics.lineStyle(0);
+		graphics.beginFill(0x696969, 0.7);
+		graphics.drawRect(w/2-100, 20, 200, 60);
+		graphics.endFill();
+		var graphicsz = game.add.graphics(0, 0);
+		graphicsz.lineStyle(0);
+		graphicsz.beginFill(0x696969, 0.7);
+		graphicsz.drawRect(w-181, 31, 117, 34);
+		graphicsz.endFill();
+		window.graphics = graphics+graphicsz;
+		calendar = game.add.sprite(w/2-80, 25, 'calendar');
+		game_time = game.add.text(w/2 +20, 50, 'Jour 0', { font: "20px Arial", fill: "#ffffff", align: "center" });
+		game_time.anchor.setTo(0.5, 0.5);
+		game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);   // compteur de jours
+		button = game.add.button(240, 50, 'button', this, 1, 0, 3);
+		button.anchor.setTo(0.5, 0.5);
+		button2 = game.add.button(30, 160, 'button2', this, 1, 0, 3);
+		button2.anchor.setTo(0.5, 0.5);
+
+		}
+
+function update() {
+
+	if (affichage==1){
+		rond.destroy();
+	}affichage-=1;
+
+	if(achat_eolienne)game.world.bringToTop(eolienne);
+	if(achat_drone)game.world.bringToTop(drone);
+	game.physics.arcade.collide(fermier, collide);   // Définit les blocs obstacles
+	game.physics.arcade.collide(vaches, collide);
+	game.physics.arcade.collide(poules, collide);
+	game.physics.arcade.collide(drone, platforms);
+	game.physics.arcade.collide(drone, collide);
+		if(counter < 365){
+				if(achat_eolienne==1){}
+				if(achat_vaches>=1 && counter_vache%18 > 3 &&  counter_vache%18 <= 5)
+				{
+					for(let i = vaches_morte; i < vache_total; i++){
+						deplacement_droite(vaches[i]);
+					}
+				}
+				if(achat_vaches>=1 && counter_vache%18 > 5 && counter_vache%18 <= 10){
+					for(let i = vaches_morte; i < vache_total; i++){
+						deplacement_haut(vaches[i]);
+					}
+				}
+				if(counter_vache%18 == 11){
+					abattoire();
+				}
+				if(achat_poules>=1 && counter_poule%18 > 3 &&  counter_poule%18 <= 5)
+				{
+					for(let i = poules_morte; i < poule_total; i++){
+						deplacement_droite(poules[i]);
+					}
+				}
+				if(counter_poule%18 == 11){
+					abattoire2();
+				}
+				if(achat_vaches>=1 && counter_vache%18 <= 12  && counter_vache%18 > 10){
+					for(let i = vaches_morte; i < vache_total; i++){
+						deplacement_droite(vaches[i]);
+					}
+				}
+				else{deplacement_vaches();
+						 deplacement_poules();
+				}
+
+				deplacement_fermier(fermier);
+		}
+		Score();
+		Bitcoin();
+		game.world.bringToTop(fermier);
+		if(ouvert2==true){
+			game.world.bringToTop(cadre_achat_vente);
+			game.world.bringToTop(cadre_achat);
+			game.world.bringToTop(cadre_vente);
+		}
+		if(ouvert3==true){
+			game.world.bringToTop(acheter_drone);
+			game.world.bringToTop(acheter_panneau);
+			game.world.bringToTop(acheter_vache_laitiere);
+			game.world.bringToTop(acheter_poule);
+			game.world.bringToTop(mvt_right);
+		}
+		if(ouvert4==true){
+			game.world.bringToTop(vendre_oeuf);
+			game.world.bringToTop(vendre_salade);
+			game.world.bringToTop(vendre_viande);
+			game.world.bringToTop(vendre_lait);
+			game.world.bringToTop(vendre_fraise);
+			game.world.bringToTop(vendre_piment);
+			game.world.bringToTop(affichage_vsalade);
+			game.world.bringToTop(affichage_oeuf);
+			game.world.bringToTop(affichage_viande);
+			game.world.bringToTop(affichage_lait);
+			game.world.bringToTop(affichage_vfraise);
+			game.world.bringToTop(affichage_vpiment);
+		}
+		if (ouvert6){
+			game.world.bringToTop(acheter_eolienne);
+			game.world.bringToTop(mvt_right);
+			game.world.bringToTop(acheter_salade);
+			game.world.bringToTop(acheter_plante_grouge);
+			game.world.bringToTop(acheter_plante_rouge);
+		}
+		if(achat_drone && ouvert3 == true) game.world.bringToTop(croix1);
+		if(achat_eolienne && ouvert6 == true) game.world.bringToTop(croix2);
+		if(achat_paneaux && ouvert3 == true) game.world.bringToTop(croix3);
+
+		if(counter == 365){
+			fin();
+		}
+
+}
+
+function Bitcoin(){     // affichage argent
+		if(existe == 1){
+			argent.destroy();
+		}
+		existe = 1;
+		argent = game.add.text(w-110, 50, bitcoin, { font: "20px Arial", fill: "#ffffff", align: "center" });
+		argent.anchor.setTo(0.5, 0.5);
+		tune = game.add.button(w-125, 47, 'bitcoin');
+		tune.anchor.setTo(0.5, 0.5);
+}
+function Score(){
+		if (compteur%50==0){
+		SC+= Math.trunc(point_eolienne/100+achat_paneaux*1.5+nbr_vache/2);
+		}
+}
+function create_vache(){
+
+	game.physics.arcade.enable(vaches[vache_total]);
+	vaches[vache_total].body.collideWorldBounds = false;
+	vaches[vache_total].body.gravity.y = 0;
+	vaches[vache_total].animations.add('right', [6, 7, 8], 10, true);
+	vaches[vache_total].animations.add('left', [3, 4, 5], 10, true);
+	vaches[vache_total].animations.add('up', [9, 10, 11], 10, true);
+	vaches[vache_total].animations.add('down', [0, 1, 2], 10, true);
+}
+
+function create_poule(){
+
+	game.physics.arcade.enable(poules[poule_total]);
+	poules[poule_total].body.collideWorldBounds = false;
+	poules[poule_total].body.gravity.y = 0;
+	poules[poule_total].animations.add('right', [6, 7, 8], 10, true);
+	poules[poule_total].animations.add('left', [3, 4, 5], 10, true);
+	poules[poule_total].animations.add('up', [9, 10, 11], 10, true);
+	poules[poule_total].animations.add('down', [0, 1, 2], 10, true);
+}
+
+function deplacement_vaches(){
+
+	if (compteur%25==0)
+	{
+			for (let i=0;i<vache_total;i+=1)
+			{
+				deplacement_aleatoire(vaches[i]);
+			}
+	}
+ 		compteur +=1;
+}
+
+function deplacement_poules(){
+
+	if (compteur%25==0)
+	{
+			for (let i=0;i<poule_total;i+=1)
+			{
+				deplacement_aleatoire(poules[i]);
+			}
+	}
+ 		compteur +=1;
+}
+
+function abattoire(){
+	jour = counter;
+	for(let i = vaches_morte; i < vache_total; i++){
+			if(jour - vaches_create[i] > 60 && vaches_create[i] > 0){
+				vaches[i].kill();
+				vaches_create[i] = -1;
+				viande += 1;
+				vaches_create[vache_total] = 0;
+		}
+	}
+}
+
+function abattoire2(){
+	jour = counter;
+	for(let i = poules_morte; i < poule_total; i++){
+			if(jour - poules_create[i] > 60 && poules_create[i] > 0){
+				poules[i].kill();
+				poules_create[i] = -1;
+				oeuf += 1;
+				poules_create[poule_total] = 0;
+		}
+	}
+}
+
+function deplacement_haut(sprite){
+
+	sprite.body.velocity.y = -170;
+	sprite.body.velocity.x = 0;
+	sprite.animations.play('up');
+}
+function deplacement_bas(sprite){
+	sprite.body.velocity.y = 160;
+	sprite.body.velocity.x = 0;
+	sprite.animations.play('down');
+}
+function deplacement_droite(sprite){
+	sprite.body.velocity.y = 0;
+	sprite.body.velocity.x = 160;
+	sprite.animations.play('right');
+}
+function deplacement_gauche(sprite){
+	sprite.body.velocity.y = 0;
+	sprite.body.velocity.x = -160;
+	sprite.animations.play('left');
+}
+function deplacement_stop(sprite){
+	sprite.body.velocity.y = 0;
+	sprite.body.velocity.x = 0;
+}
+function deplacement_aleatoire(player){
+	player.body.velocity.x = 0;
+	mvt=Math.random()*5;
+	if (~~mvt==1){
+		player.body.velocity.x = -50;
+		player.animations.play('left');
+	}
+	if (~~mvt==2){
+		player.body.velocity.x = 50;
+	  player.animations.play('right');
+	}
+	if (~~mvt==3){
+		player.animations.play('up');
+		player.body.velocity.y = -50;
+	}
+	if (~~mvt==4){
+		player.animations.play('down');
+		player.body.velocity.y = 50;
+	}
+}
+
+function deplacement_fermier(fermier){
+	fermier.body.velocity.x = 0;
+  if (cursors.left.isDown){
+    //  Move to the left
+    deplacement_gauche(fermier);
+    fermier.animations.play('left');
+  }
+  if (cursors.right.isDown){
+  	//  Move to the right
+    deplacement_droite(fermier);
+    fermier.animations.play('right');
+  }
+  if (cursors.up.isDown){
+		deplacement_haut(fermier);
+		fermier.animations.play('up');
+  }
+	if(cursors.down.isDown){
+		deplacement_bas(fermier);
+		fermier.animations.play('down');
+		}
+	if(cursors.up.isUp && cursors.down.isUp && cursors.left.isUp && cursors.right.isUp ){
+		//  Stand still
+		deplacement_stop(fermier);
+		fermier.animations.stop();
+		fermier.frame = 5;
+	}
+
+	if(fermier.x >= 410 && fermier.x <= 450 && fermier.y >= 200 && fermier.y <= 225){
+		if(!ouvert2) MenuShop();
+
+	}
+	else if(ouvert2){
+		destroyMenuShop();
+	}
+}
+
+function updateCounter(){// MODIFIER POUR QUE LE COMPTEUR S'ARRETE UNE FOIS ARRIVE A 365
+		counterTune++;
+		date=0;
+		if(counter < 365){
+			counter++;
+		}
+		if(counter == 365){
+			counter += 0;
+		}
+		counter_vache++;
+		counter_poule++;
+		if (counter%5 == 0){
+			if(vache_total>0){
+				lait+=nbr_vache;
+				vaches_traite+=nbr_vache;
+			}  // faire variable globale nbr vaches vivantes
+			if (counter%5 == 0  && poules[poule_total] != 0){
+				if(poule_total>0){
+					oeuf+=nbr_poule;
+					poules_ponte+=nbr_poule;
+				}
+
+		}
+	}
+		game_time.setText(' Jour ' + counter);
+}
+function MenuRecap(){
+    //  Manually changing the frames of the button, i.e, how it will look when you play with it
+		ouvert = true;
+
+}
+
+function MenuShop(){
+    //  Manually changing the frames of the button, i.e, how it will look when you play with it
+		ouvert2 = true;
+		cadre_achat_vente = game.add.button(w/2, h/2, 'cadre_achat_vente');
+		cadre_achat_vente.anchor.setTo(0.5, 0.5);
+		cadre_vente = game.add.button(w/2-180, h/2-315, 'cadre_vente', actionOnClickVente);
+		cadre_vente.anchor.setTo(0.5, 0.5);
+		cadre_achat = game.add.button(w/2+180, h/2-315, 'cadre_achat', actionOnClickAchat);
+		cadre_achat.anchor.setTo(0.5, 0.5);
+}
+function destroyMenuShop(){
+		ouvert2 = false;
+		if(ouvert3){
+			ouvert3 = false;
+			acheter_drone.destroy();
+			acheter_panneau.destroy();
+			acheter_vache_laitiere.destroy();
+			acheter_poule.destroy();
+			mvt_right.destroy();
+		}
+		if(ouvert4){
+			ouvert4 = false;
+			vendre_oeuf.destroy();
+			vendre_salade.destroy();
+			vendre_viande.destroy();
+			vendre_lait.destroy();
+			vendre_fraise.destroy();
+			vendre_piment.destroy();
+			affichage_oeuf.destroy();
+			affichage_vsalade.destroy();
+			affichage_viande.destroy();
+			affichage_lait.destroy();
+			affichage_vfraise.destroy();
+			affichage_vpiment.destroy();
+		}
+		if(achat_drone) croix1.destroy();
+		if(achat_eolienne) croix2.destroy();
+		if(achat_paneaux) croix3.destroy();
+		cadre_achat_vente.destroy();
+		cadre_vente.destroy();
+		cadre_achat.destroy();
+		if (ouvert6){
+			ouvert6=false;
+			acheter_eolienne.destroy();
+			 acheter_salade.destroy();
+			 acheter_plante_rouge.destroy();
+			 acheter_plante_grouge.destroy();
+			mvt_right.destroy();
+		}
+}
+
+function actionOnClickAchat(){
+		if(ouvert3){mvt_right.destroy();destroyMenuShop();ouvert3=false;}
+		ouvert3 = true;
+		if(ouvert4){
+			ouvert4 = false;
+			vendre_oeuf.destroy();
+			vendre_salade.destroy();
+			vendre_viande.destroy();
+			vendre_lait.destroy();
+			vendre_fraise.destroy();
+			vendre_piment.destroy();
+			affichage_oeuf.destroy();
+			affichage_vsalade.destroy();
+			affichage_viande.destroy();
+			affichage_lait.destroy();
+			affichage_vpiment.destroy();
+			affichage_vfraise.destroy();
+		}
+		if (ouvert6){
+			ouvert6=false;
+			acheter_eolienne.destroy();
+			acheter_plante_grouge.destroy();
+			acheter_plante_rouge.destroy();
+			acheter_salade.destroy();
+			mvt_right.destroy();
+		}
+		if(achat_drone && ouvert3 == true){
+			croix1 = game.add.button(w/2+220, h/2+190, 'croix');
+			croix1.anchor.setTo(0.5, 0.5);
+		}
+		if(achat_eolienne && ouvert6){
+			croix2 = game.add.button(w/2+220, h/2+190, 'croix');
+			croix2.anchor.setTo(0.5, 0.5);
+		}
+		if(achat_paneaux){
+			croix3 = game.add.button(w/2-220, h/2+190, 'croix');
+			croix3.anchor.setTo(0.5, 0.5);
+		}
+
+		acheter_drone = game.add.button(w/2+220, h/2+190, 'acheter_drone', actionOnClickDrone);
+		acheter_drone.anchor.setTo(0.5, 0.5);
+
+		acheter_panneau = game.add.button(w/2-220, h/2+190, 'acheter_panneau', actionOnClickPaneaux);
+		acheter_panneau.anchor.setTo(0.5, 0.5);
+
+		acheter_vache_laitiere = game.add.button(w/2, h/2-105, 'acheter_vache', actionOnClickVache);
+		acheter_vache_laitiere.anchor.setTo(0.5, 0.5);
+		acheter_poule = game.add.button(w/2, h/2+190, 'acheter_poule', actionOnClickPoule);
+		acheter_poule.anchor.setTo(0.5, 0.5);
+		mvt_right=game.add.button(1060,h/2,'mvt_left',actionOnClickMvt_right);
+		mvt_right.anchor.setTo(0.5,0.5);
+
+}
+//___________________[Menu Achat Page 2]___________________
+function actionOnClickMvt_right(){
+
+			ouvert6=true;
+			acheter_drone.destroy();
+			acheter_panneau.destroy();
+			acheter_vache_laitiere.destroy();
+			acheter_poule.destroy();
+			mvt_right.destroy();
+			if(achat_drone) croix1.destroy();
+		if(achat_eolienne) croix2.destroy();
+		if(achat_paneaux) croix3.destroy();
+				acheter_eolienne = game.add.button(w/2+220, h/2+190, 'acheter_eolienne', actionOnClickEolienne);
+		    acheter_eolienne.anchor.setTo(0.5, 0.5);
+		    acheter_salade = game.add.button(w/2, h/2-105, 'salade_shop', actionOnClickPlanteV);
+		    acheter_salade.anchor.setTo(0.5, 0.5);
+		    acheter_plante_rouge = game.add.button(w/2-220, h/2+190, 'plante_rouge_shop', actionOnClickPlanteR);
+		    acheter_plante_rouge.anchor.setTo(0.5, 0.5);
+		    acheter_plante_grouge= game.add.button(w/2, h/2+190, 'plante_grouge_shop', actionOnClickpiment);
+		    acheter_plante_grouge.anchor.setTo(0.5, 0.5);
+			  mvt_right=game.add.button(210,h/2,'mvt_left',actionOnClickAchat);
+			  mvt_right.anchor.setTo(0.5,0.5);
+}
+function actionOnClickPlanteV(){
+	if (bitcoin>=40 && achat_salade == 0){
+		bitcoin-=40;
+		achat_salade=1;
+		planteV = game.add.sprite(0,h-260, 'champsalade');
+		game.time.events.add(Phaser.Timer.SECOND * 15, removeSalade, this);
+	}
+}
+
+function removeSalade(){
+	planteV.destroy(true);
+	salade_recolte+=80;
+	achat_salade = 0;
+}
+
+function actionOnClickPlanteR(){
+	if (bitcoin>=50 && achat_planteR == 0){
+		bitcoin-=50;
+		achat_planteR=1;
+		planteR = game.add.sprite(w-571, h-128, 'champfraise');
+		game.time.events.add(Phaser.Timer.SECOND * 20, removeFraise, this);
+	}
+}
+
+function removeFraise(){
+	planteR.destroy(true);
+	fraise_recolte+=28;
+	achat_planteR = 0;
+}
+
+function actionOnClickpiment(){
+	if (bitcoin>=100 && achat_piment == 0){
+		bitcoin-=100;
+		achat_piment=1;
+		piment = game.add.sprite(w-570,h/2+154, 'champpiment');
+		game.time.events.add(Phaser.Timer.SECOND * 50, removePiment, this);
+	}
+}
+
+function removePiment(){
+	piment.destroy(true);
+	piment_recolte+=28;
+	achat_piment = 0;
+}
+
+
+function actionOnClickVente(){
+		if (ouvert4==false && ouvert6 == true || ouvert3 == true){
+			ouvert4 = true;
+			ouvert6 = false;
+			ouvert3 = false;
+			mvt_right.destroy();
+
+		if(ouvert3){
+			ouvert3 = false;
+			acheter_drone.destroy();
+			acheter_panneau.destroy();
+			acheter_vache_laitiere.destroy();
+			acheter_poule.destroy();
+			mvt_right.destroy();
+		}
+		if(achat_drone) croix1.destroy();
+		if(achat_eolienne) croix2.destroy();
+		if(achat_paneaux) croix3.destroy();
+
+		affichage_oeuf= game.add.text(w/2-220, h/2+220, 'Oeuf: '+oeuf, { font: "24px Arial", fill: "#000000", align: "center" });
+		affichage_oeuf.anchor.setTo(0.5, 0.5);
+		vendre_oeuf = game.add.button(w/2-220, h/2+190, 'vendre_oeuf',actionOnClickOeuf);
+		vendre_oeuf.anchor.setTo(0.5, 0.5);
+
+
+		affichage_vsalade= game.add.text(w/2+220, h/2-80, 'Salades: '+salade_recolte, { font: "24px Arial", fill: "#000000", align: "center"});
+		affichage_vsalade.anchor.setTo(0.5, 0.5);
+		vendre_salade = game.add.button(w/2+220, h/2-100, 'vendresalade',actionOnClickVenteSalade);
+		vendre_salade.anchor.setTo(0.5, 0.5);
+
+		affichage_vfraise= game.add.text(w/2, h/2-80, 'Fraises: '+fraise_recolte, { font: "24px Arial", fill: "#000000", align: "center"});
+		affichage_vfraise.anchor.setTo(0.5, 0.5);
+		vendre_fraise = game.add.button(w/2, h/2-100, 'vendrefraise',actionOnClickVenteFraise);
+		vendre_fraise.anchor.setTo(0.5, 0.5);
+
+		affichage_vpiment= game.add.text(w/2-220, h/2-80, 'Piments: '+piment_recolte, { font: "24px Arial", fill: "#000000", align: "center"});
+		affichage_vpiment.anchor.setTo(0.5, 0.5);
+		vendre_piment = game.add.button(w/2-220, h/2-100, 'vendrepiment',actionOnClickVentePiments);
+		vendre_piment.anchor.setTo(0.5, 0.5);
+
+		affichage_viande=  game.add.text(w/2, h/2+220, 'Viande: '+viande, { font: "24px Arial", fill: "#000000", align: "center"});
+		affichage_viande.anchor.setTo(0.5, 0.5);
+		vendre_viande = game.add.button(w/2, h/2+190, 'vendre_viande',actionOnClickViande);
+		vendre_viande.anchor.setTo(0.5, 0.5);
+
+
+		affichage_lait= game.add.text(w/2+220, h/2+220, 'Lait: '+lait, { font: "24px Arial", fill: "#000000", align: "center" });
+		affichage_lait.anchor.setTo(0.5, 0.5);
+		vendre_lait = game.add.button(w/2+220, h/2+190, 'vendre_lait',actionOnClickLait);
+		vendre_lait.anchor.setTo(0.5, 0.5);}
+
+}
+function actionOnClickOeuf(){
+	bitcoin+=oeuf*2;
+	oeuf=0;
+	affichage_oeuf.destroy(true);
+	affichage_oeuf= game.add.text(w/2-220, h/2+220, 'Oeuf: '+oeuf, { font: "24px Arial", fill: "#000000", align: "center" });
+	affichage_oeuf.anchor.setTo(0.5, 0.5);
+}
+function actionOnClickEnergie(){
+	var gain=5;
+	if (achat_poules){gain-=1;}
+	if (achat_drone){gain-=1;}
+	if (achat_eolienne){gain-=1;}
+	if(achat_vaches){gain-=1;}
+	bitcoin+=energie*gain;
+	energie=0;
+}
+function actionOnClickViande(){
+	bitcoin+=viande*50;
+	viande=0;
+	affichage_viande.destroy(true);
+	affichage_viande=  game.add.text(w/2, h/2+220, 'Viande: '+viande, { font: "24px Arial", fill: "#000000", align: "center"});
+	affichage_viande.anchor.setTo(0.5, 0.5);
+}
+function actionOnClickLait(){
+	bitcoin+=lait*5;
+	lait=0;
+	affichage_lait.destroy(true);
+	affichage_lait= game.add.text(w/2+220, h/2+220, 'Lait: '+lait, { font: "24px Arial", fill: "#000000", align: "center" });
+	affichage_lait.anchor.setTo(0.5, 0.5);
+}
+
+function actionOnClickVenteSalade(){
+	bitcoin+=salade_recolte*1.2;
+	salade_recolte = 0;
+	affichage_vsalade.destroy(true);
+	affichage_vsalade= game.add.text(w/2+220, h/2-80, 'Salades: '+salade_recolte, { font: "24px Arial", fill: "#000000", align: "center"});
+	affichage_vsalade.anchor.setTo(0.5, 0.5);
+}
+function actionOnClickVenteFraise(){
+	bitcoin+=fraise_recolte*2.5;
+	fraise_recolte = 0;
+	affichage_vfraise.destroy(true);
+	affichage_vfraise= game.add.text(w/2, h/2-80, 'Fraises: '+fraise_recolte, { font: "24px Arial", fill: "#000000", align: "center"});
+	affichage_vfraise.anchor.setTo(0.5, 0.5);
+}
+function actionOnClickVentePiments(){
+	bitcoin+=piment_recolte*5.5;
+	piment_recolte = 0;
+	affichage_vpiment.destroy(true);
+	affichage_vpiment= game.add.text(w/2-220, h/2-80, 'Piments: '+piment_recolte, { font: "24px Arial", fill: "#000000", align: "center"});
+	affichage_vpiment.anchor.setTo(0.5, 0.5);
+}
+
+function actionOnClickDrone(){
+		if (achat_drone==1){}
+		else{
+			if(bitcoin >= 100){
+				bitcoin -= 100;
+				achat_drone=1;
+				croix1 = game.add.button(w/2+220, h/2+190, 'croix');
+				croix1.anchor.setTo(0.5, 0.5);
+				acheter_drone.destroy();
+				acheter_drone = game.add.button(w/2+220, h/2+190);
+				acheter_drone.anchor.setTo(0.5, 0.5);
+				drone = game.add.sprite(900, 500, 'drone');
+				game.physics.arcade.enable(drone);
+				drone.body.gravity.y = 0;
+				drone.body.collideWorldBounds = true;
+				drone.body.velocity.setTo(80, 90);
+				drone.body.bounce.set(1);
+				drone.animations.add('left', [0, 1, 2], 10, true);
+				drone.animations.play('left');
+				succesdrone();
+			}
+			RendementDrone();
+		}
+}
+
+function RendementDrone(){
+		if(achat_drone == 1){
+			game.time.events.add(Phaser.Timer.SECOND * 10, GetBitcoinDrone, this);
+	}
+}
+
+function GetBitcoinDrone(){
+	bitcoin+=10;
+	RendementDrone();
+}
+
+function actionOnClickEolienne(){
+		if (achat_eolienne==1){}
+		else{
+			if(bitcoin >= 2000){
+				bitcoin -= 2000;
+				achat_eolienne = 1;
+				if(ouvert6){
+				croix2 = game.add.button(w/2+220, h/2+190, 'croix');
+				croix2.anchor.setTo(0.5, 0.5);
+				}
+				eolienne = game.add.sprite(100, 250, 'eolienne');
+		  }
+			RendementEolienne();
+		}
+}
+
+function RendementEolienne(){
+		if(achat_eolienne == 1){
+			game.time.events.add(Phaser.Timer.SECOND * 10, GetBitcoinEolienne, this);
+	}
+}
+
+function GetBitcoinEolienne(){
+	bitcoin+=100;
+	RendementEolienne();
+}
+
+
+function actionOnClickPaneaux(){
+		if (achat_paneaux==1){}
+		else{
+			if(bitcoin >= 1000){
+				bitcoin -= 1000;
+				achat_paneaux=1;
+				ouvert3=true;
+				croix3 = game.add.button(w/2-220, h/2+190, 'croix');
+				croix3.anchor.setTo(0.5, 0.5);
+				paneaux = game.add.sprite(300, 200, 'solar_panel');
+				paneaux.scale.setTo(0.5, 0.5);
+				paneaux.inputEnabled = true;
+				paneaux.input.enableDrag(false);
+				paneaux.anchor.setTo(0.5, 0.5);
+				fermier.x=161;
+				successolaire();
+				RendementPanneau();
+			}
+		}
+}
+
+
+function RendementPanneau(){
+		if(achat_paneaux == 1){
+			game.time.events.add(Phaser.Timer.SECOND * 7, GetBitcoinPanneau, this);
+	}
+}
+
+function GetBitcoinPanneau(){
+	bitcoin+=25;
+	RendementPanneau();
+}
+
+
+function actionOnClickVache(){
+	if(bitcoin >= 100){
+		bitcoin -= 100;
+		achat_vaches = 1;
+		counter_vache=0;
+		vaches.push(game.add.sprite(945, 253,'vache'));
+		create_vache();
+		vaches_create[vache_total] = counter;
+		nbr_vache+=1;
+		vache_total += 1;
+	}
+}
+
+	function actionOnClickPoule(){
+		if(bitcoin >= 50){
+			bitcoin -= 50;
+			achat_poules = 1;
+			counter_poule=0;
+			poules.push(game.add.sprite(945, 150,'poule'));
+			create_poule();
+			poules_create[poule_total] = counter;
+			nbr_poule+=1;
+			poule_total += 1;
+		}
+	}
+
+//-----------------------------------------------FIN-------------------------------------
+function fin(){//Permet d'afficher l'image de fin ainsi que de stopper tous les mouvements/animations/compteur.
+	SC+=bitcoin;
+	bitcoin=0;
+	fermier.body.velocity = 0;
+	fermier.kill();
+	fermier.x = 900;
+	fermier.y = 900;
+		if(achat_drone == 1){
+		deplacement_stop(drone);
+		}
+		if(achat_vaches == 1){
+			for (let i=vaches_morte;i<vache_total;i+=1)
+			{
+					deplacement_stop(vaches[i]);
+			}
+		}
+
+		if(achat_poules == 1){
+			for (let i=poules_morte;i<poule_total;i+=1)
+			{
+					deplacement_stop(poules[i]);
+			}
+		}
+
+		fin_menu = game.add.button(w/6,h/6,'fin',actionOnClickFin);
+		game.world.bringToTop(fin_menu);
+
+}
+
+function actionOnClickFin(){
+}
+
+function gofull() {
+
+    game.scale.startFullScreen();
+
+}
+//___________________[Succes]___________________
+//Succes Drone
+function succesdrone() {
+	soundsucces = game.add.audio('succes');
+	soundsucces.play();
+	spritesucces = game.add.sprite(434, 600, 'spritesucces');
+	textes1 = game.add.text(545,620, "Succès dévérouillé: Paré au décollage !", { font: "20px Arial", fill: "#ffffff", align: "center" });
+	textes2 = game.add.text(545,650, " Vous avez débloqué le drône !", { font: "14px Arial", fill: "#ffffff", align: "center" });
+	timer = game.time.create(false);
+	timer.add(7000, clearsucces, this);
+	timer.start();
+}
+//Succes Panneaux Solaires
+function successolaire() {
+	soundsucces = game.add.audio('succes');
+	soundsucces.play();
+	spritesucces = game.add.sprite(434, 600, 'spritesucces');
+	textes1 = game.add.text(545,620, "Succès dévérouillé: Energie Verte", { font: "20px Arial", fill: "#ffffff", align: "center" });
+	textes2 = game.add.text(545,650, " Vous avez débloqué les panneaux solaires!", { font: "14px Arial", fill: "#ffffff", align: "center" });
+	timer = game.time.create(false);
+	timer.add(7000, clearsucces, this);
+	timer.start();
+}
+//Fonction "Nettoyage des succes"
+function clearsucces() {
+	spritesucces.destroy(true, true);
+	textes1.destroy();
+	textes2.destroy();
+
+}
+//Fonction "Nettoyage Checklist"
+function clearchecklist() {
+	checklist.destroy(true, true);
+}
+//________________________________________________
+</script>
+</body>
+</html>
