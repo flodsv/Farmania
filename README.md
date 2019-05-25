@@ -1,4 +1,3 @@
-# Farmania
 ![Farmania](https://raw.githubusercontent.com/flodsv/Farmania/master/fm.png?token=ALIO3L6OMJLKDU7U6DPOIR245EGVO)
 
 # [INSTALLATION]
